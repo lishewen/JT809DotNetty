@@ -123,31 +123,38 @@ Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
             if (disposed) return;
             if (channel == null) throw new NullReferenceException("Channel Not Open");
             if (jT809Response == null) throw new ArgumentNullException("Data is null");
-            if (channel.Open && channel.Active)
+            try
             {
-                manualResetEvent.Pause();
-                await channel.WriteAndFlushAsync(jT809Response);
+                if (channel.Open && channel.Active)
+                {
+                    manualResetEvent.Pause();
+                    await channel.WriteAndFlushAsync(jT809Response);
+                }
+                else
+                {
+                    manualResetEvent.Reset();
+                    _ = Policy.HandleResult(channel.Open && channel.Active)
+                            .WaitAndRetryForeverAsync(retryAttempt =>
+                            {
+                                return TimeSpan.FromSeconds(10);
+                            }, (exception, timespan, ctx) =>
+                             {
+                                 logger.LogError($"服务端断开{channel.RemoteAddress}，重试结果{exception.Result}，重试次数{timespan}，下次重试间隔(s){ctx.TotalSeconds}");
+                             })
+                            .ExecuteAsync(async () =>
+                            {
+                                channel = await bootstrap.ConnectAsync(iPEndPoint);
+                                var package = Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
+                                await channel.WriteAndFlushAsync(new JT809Response(package, 256));
+                                logger.LogInformation("尝试重连,等待登录应答结果...");
+                                manualResetEvent.Pause();
+                                return await Task.FromResult(channel.Open && channel.Active);
+                            });
+                }
             }
-            else
+            catch (ClosedChannelException ex)
             {
-                manualResetEvent.Reset();
-                _ = Policy.HandleResult(channel.Open && channel.Active)
-                        .WaitAndRetryForeverAsync(retryAttempt =>
-                        {
-                            return TimeSpan.FromSeconds(10);
-                        }, (exception, timespan, ctx) =>
-                         {
-                             logger.LogError($"服务端断开{channel.RemoteAddress}，重试结果{exception.Result}，重试次数{timespan}，下次重试间隔(s){ctx.TotalSeconds}");
-                         })
-                        .ExecuteAsync(async () =>
-                        {
-                            channel = await bootstrap.ConnectAsync(iPEndPoint);
-                            var package = Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
-                            await channel.WriteAndFlushAsync(new JT809Response(package, 100));
-                            logger.LogInformation("尝试重连,等待登录应答结果...");
-                            manualResetEvent.Pause();
-                            return await Task.FromResult(channel.Open && channel.Active);
-                        });
+                logger.LogError(ex.Message);
             }
         }
 
