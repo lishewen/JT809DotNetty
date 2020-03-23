@@ -7,11 +7,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using JT809.Protocol.Extensions.DependencyInjection;
-using JT809.Protocol.Extensions.DependencyInjection.Options;
+using JT809.Protocol;
+using JT809.Protocol.Interfaces;
 
 namespace JT809.Inferior.Client
 {
+    public class DefaultConfig : JT809GlobalConfigBase
+    {
+        public override string ConfigId => "test";
+    }
     class Program
     {
         static async Task Main(string[] args)
@@ -31,7 +35,7 @@ namespace JT809.Inferior.Client
                 {
                     services.AddSingleton<ILoggerFactory, LoggerFactory>();
                     services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-                    services.AddJT809Configure(new JT809Options
+                    services.AddJT809Configure(new DefaultConfig
                     {
                         HeaderOptions = new Protocol.Configs.JT809HeaderOptions
                         {
