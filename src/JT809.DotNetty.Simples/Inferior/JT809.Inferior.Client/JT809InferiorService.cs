@@ -168,7 +168,7 @@ namespace JT809.Inferior.Client
                                 Result = JT809_0x1501_Result.监听成功
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1500);
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -211,7 +211,7 @@ namespace JT809.Inferior.Client
                                 Type = 1,
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1500);
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -233,7 +233,28 @@ namespace JT809.Inferior.Client
                                 Result = JT809_0x1503_Result.下发成功
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1500);
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1505
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1500 jT809_0X1500 = new JT809_0x1500
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.车辆应急接入监管平台应答消息,
+                            SubBodies = new JT809_0x1500_0x1505
+                            {
+                                Result = JT809_0x1505_Result.无该车辆
+                            }
+                        };
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);

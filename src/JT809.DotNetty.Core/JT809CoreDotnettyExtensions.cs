@@ -31,20 +31,22 @@ namespace JT809.DotNetty.Core
         {
             JsonConvert.DefaultSettings = new Func<JsonSerializerSettings>(() =>
             {
-                Newtonsoft.Json.JsonSerializerSettings settings = new Newtonsoft.Json.JsonSerializerSettings();
-                //日期类型默认格式化处理
-                settings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.MicrosoftDateFormat;
-                settings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-                //空值处理
-                settings.NullValueHandling = NullValueHandling.Ignore;
-                settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                Newtonsoft.Json.JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    //日期类型默认格式化处理
+                    DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+                    DateFormatString = "yyyy-MM-dd HH:mm:ss",
+                    //空值处理
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
                 settings.Converters.Add(new JsonIPAddressConverter());
                 settings.Converters.Add(new JsonIPEndPointConverter());
                 return settings;
             });
         }
 
-        public static IServiceCollection AddJT809Core(this IServiceCollection serviceDescriptors,IConfiguration configuration, Newtonsoft.Json.JsonSerializerSettings settings = null)
+        public static IServiceCollection AddJT809Core(this IServiceCollection serviceDescriptors,IConfiguration configuration, JsonSerializerSettings settings = null)
         {
             if (settings != null)
             {
