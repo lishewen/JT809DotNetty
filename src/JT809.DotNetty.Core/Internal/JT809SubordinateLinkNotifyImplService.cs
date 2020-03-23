@@ -14,33 +14,37 @@ using System.Text;
 
 namespace JT809.DotNetty.Core.Internal
 {
-    class JT809SubordinateLinkNotifyImplService: IJT809SubordinateLinkNotifyService
+    class JT809SubordinateLinkNotifyImplService : IJT809SubordinateLinkNotifyService
     {
         private readonly JT809Configuration configuration;
         private readonly JT809SuperiorMainSessionManager jT809SuperiorMainSessionManager;
         private readonly ILogger logger;
-
+        private readonly JT809Serializer serializer;
+        private readonly IJT809Config jT809Config;
         public JT809SubordinateLinkNotifyImplService(
             ILoggerFactory loggerFactory,
             IOptions<JT809Configuration> jT809ConfigurationAccessor,
-            JT809SuperiorMainSessionManager jT809SuperiorMainSessionManager
-            )
+            JT809SuperiorMainSessionManager jT809SuperiorMainSessionManager,
+            JT809Serializer serializer,
+            IJT809Config config)
         {
             this.logger = loggerFactory.CreateLogger<JT809SubordinateLinkNotifyImplService>();
             configuration = jT809ConfigurationAccessor.Value;
             this.jT809SuperiorMainSessionManager = jT809SuperiorMainSessionManager;
+            this.serializer = serializer;
+            jT809Config = config;
         }
 
         public void Notify(JT809_0x9007_ReasonCode reasonCode)
         {
-            Notify(reasonCode, JT809GlobalConfig.Instance.HeaderOptions.MsgGNSSCENTERID);
+            Notify(reasonCode, jT809Config.HeaderOptions.MsgGNSSCENTERID);
         }
 
         public void Notify(JT809_0x9007_ReasonCode reasonCode, uint msgGNSSCENTERID)
         {
             if (configuration.SubordinateClientEnable)
             {
-                var session = jT809SuperiorMainSessionManager.GetSession(JT809GlobalConfig.Instance.HeaderOptions.MsgGNSSCENTERID);
+                var session = jT809SuperiorMainSessionManager.GetSession(jT809Config.HeaderOptions.MsgGNSSCENTERID);
                 if (session != null)
                 {
                     //发送从链路注销请求
@@ -49,8 +53,8 @@ namespace JT809.DotNetty.Core.Internal
                         ReasonCode = reasonCode
                     });
                     JT809Response jT809Response = new JT809Response(package, 100);
-                    if(logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"从链路断开通知消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
+                    if (logger.IsEnabled(LogLevel.Information))
+                        logger.LogInformation($"从链路断开通知消息>>>{serializer.Serialize(package, 100).ToHexString()}");
                     session.Channel.WriteAndFlushAsync(jT809Response);
                 }
             }

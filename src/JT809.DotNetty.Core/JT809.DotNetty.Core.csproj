@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>Last</LangVersion>
     <Copyright>Copyright 2018.</Copyright>
     <Authors>SmallChi</Authors>
     <PackageId>JT809.DotNetty.Core</PackageId>

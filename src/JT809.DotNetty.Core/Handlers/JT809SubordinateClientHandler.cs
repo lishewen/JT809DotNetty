@@ -19,20 +19,21 @@ namespace JT809.DotNetty.Core.Handlers
     internal class JT809SubordinateClientHandler : SimpleChannelInboundHandler<byte[]>
     {
         private readonly JT809SuperiorMsgIdReceiveHandlerBase handler;
-        
+
         private readonly JT809AtomicCounterService jT809AtomicCounterService;
 
         private readonly ILogger<JT809SubordinateServerHandler> logger;
-
+        private readonly JT809Serializer serializer;
         public JT809SubordinateClientHandler(
             ILoggerFactory loggerFactory,
             JT809SuperiorMsgIdReceiveHandlerBase handler,
-            JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty
-            )
+            JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty,
+            JT809Serializer serializer)
         {
             this.handler = handler;
             this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ClientSubordinate.ToString());
             logger = loggerFactory.CreateLogger<JT809SubordinateServerHandler>();
+            this.serializer = serializer;
         }
 
 
@@ -40,14 +41,14 @@ namespace JT809.DotNetty.Core.Handlers
         {
             try
             {
-                JT809Package jT809Package = JT809Serializer.Deserialize(msg);
+                JT809Package jT809Package = serializer.Deserialize(msg);
                 jT809AtomicCounterService.MsgSuccessIncrement();
                 if (logger.IsEnabled(LogLevel.Debug))
                 {
                     logger.LogDebug("accept package success count<<<" + jT809AtomicCounterService.MsgSuccessCount.ToString());
                 }
                 Func<JT809Request, JT809Response> handlerFunc;
-                if (handler.HandlerDict.TryGetValue(jT809Package.Header.BusinessType, out handlerFunc))
+                if (handler.HandlerDict.TryGetValue((Protocol.Enums.JT809BusinessType)jT809Package.Header.BusinessType, out handlerFunc))
                 {
                     JT809Response jT808Response = handlerFunc(new JT809Request(jT809Package, msg));
                     if (jT808Response != null)
@@ -59,9 +60,9 @@ namespace JT809.DotNetty.Core.Handlers
             catch (JT809Exception ex)
             {
                 jT809AtomicCounterService.MsgFailIncrement();
-                    logger.LogError("accept package fail count<<<" + jT809AtomicCounterService.MsgFailCount.ToString());
-                    logger.LogError(ex, "accept msg<<<" + ByteBufferUtil.HexDump(msg));
-                
+                logger.LogError("accept package fail count<<<" + jT809AtomicCounterService.MsgFailCount.ToString());
+                logger.LogError(ex, "accept msg<<<" + ByteBufferUtil.HexDump(msg));
+
             }
             catch (Exception ex)
             {

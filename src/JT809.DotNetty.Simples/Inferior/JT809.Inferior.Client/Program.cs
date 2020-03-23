@@ -42,6 +42,7 @@ namespace JT809.Inferior.Client
                             MsgGNSSCENTERID = 100210,
                         }
                     });
+                    services.AddSingleton<JT809Serializer>();
                     services.AddJT809Core(hostContext.Configuration)
                             .AddJT809InferiorPlatformClient();
                     services.AddHostedService<JT809InferiorService>();

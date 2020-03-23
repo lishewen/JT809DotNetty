@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using JT809.Protocol.SubMessageBody;
 using JT809.Protocol.Metadata;
 using JT809.Protocol.MessageBody;
+using JT809.Protocol.Enums;
 
 namespace JT809.Inferior.Client
 {
@@ -38,73 +39,201 @@ namespace JT809.Inferior.Client
             }).Result;
             if (connect)
             {
-                //Task.Run(() =>
-                //{
-                //    while (true)
-                //    {
-                //        JT809_0x1200 jT809_0X1200 = new JT809_0x1200
-                //        {
-                //            VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色,
-                //            VehicleNo = "桂DJB678",
-                //            SubBusinessType = (ushort)Protocol.Enums.JT809SubBusinessType.实时上传车辆定位信息,
-                //            SubBodies = new JT809_0x1200_0x1202()
-                //            {
-                //                VehiclePosition = new JT809VehiclePositionProperties
-                //                {
-                //                    Day = (byte)(DateTime.Now.Day),
-                //                    Month = (byte)(DateTime.Now.Month),
-                //                    Year = (ushort)(DateTime.Now.Year),
-                //                    Hour = (byte)(DateTime.Now.Hour),
-                //                    Minute = (byte)(DateTime.Now.Minute),
-                //                    Second = (byte)(DateTime.Now.Second),
-                //                    Alarm = 1,
-                //                    Direction = 2,
-                //                    State = 2,
-                //                    Altitude = 32,
-                //                    Lat = 122334565,
-                //                    Lon = 12354563,
-                //                    Vec1 = 112,
-                //                    Vec2 = 22,
-                //                    Vec3 = 12
-                //                }
-                //            }
-                //        };
-                //        var package = JT809.Protocol.Enums.JT809BusinessType.主链路动态信息交换消息.Create(jT809_0X1200);
-                //        mainClient.SendAsync(new JT809Response(package, 256));
-                //        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-2s");
-                //        Thread.Sleep(2000);
-                //    }
-                //});
+                //1301
                 Task.Run(() =>
                 {
                     while (true)
                     {
-                        JT809.Protocol.MessageBody.JT809_0x1200 jT809_0X1200 = new Protocol.MessageBody.JT809_0x1200();
-                        jT809_0X1200.VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色;
-                        jT809_0X1200.VehicleNo = "粤A12346";
-                        jT809_0X1200.SubBusinessType = (ushort)Protocol.Enums.JT809SubBusinessType.实时上传车辆定位信息;
-                        jT809_0X1200.SubBodies = new JT809_0x1200_0x1202()
+                        JT809_0x1300 jT809_0X1300 = new JT809_0x1300
                         {
-                            VehiclePosition = new JT809VehiclePositionProperties
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.平台查岗应答,
+                            SubBodies = new JT809_0x1300_0x1301
                             {
-                                Day = (byte)(DateTime.Now.Day),
-                                Month = (byte)(DateTime.Now.Month),
-                                Year = (byte)(DateTime.Now.Year),
-                                Hour = (byte)(DateTime.Now.Hour),
-                                Minute = (byte)(DateTime.Now.Minute),
-                                Second = (byte)(DateTime.Now.Second),
-                                Alarm = 1,
-                                Direction = 2,
-                                State = 2,
-                                Altitude = 32,
-                                Lat = 122334565,
-                                Lon = 12354563,
-                                Vec1 = 112,
-                                Vec2 = 22,
-                                Vec3 = 12
+                                ObjectID = "10004",
+                                InfoContent = "10004",
+                                InfoID = 10004,
+                                ObjectType = JT809_0x1301_ObjectType.当前连接的下级平台
                             }
                         };
-                        var package = JT809.Protocol.Enums.JT809BusinessType.主链路动态信息交换消息.Create(jT809_0X1200);
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1300);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1302
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1300 jT809_0X1300 = new JT809_0x1300
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.下发平台间报文应答,
+                            SubBodies = new JT809_0x1300_0x1302
+                            {
+                                InfoID = 1234
+                            }
+                        };
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1300);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1401
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1400 jT809_0X1400 = new JT809_0x1400
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.报警督办应答,
+                            SubBodies = new JT809_0x1400_0x1401
+                            {
+                                SupervisionID = 10004,
+                                Result = JT809_0x1401_Result.处理中
+                            }
+                        };
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1400);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1402
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1400 jT809_0X1400 = new JT809_0x1400
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.上报报警信息,
+                            SubBodies = new JT809_0x1400_0x1402
+                            {
+                                WarnSrc = JT809WarnSrc.车载终端,
+                                WarnType = JT809WarnType.偏离路线报警,
+                                WarnTime = DateTime.Now,
+                                InfoContent = "Test",
+                                InfoID = 3388,
+                            }
+                        };
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1400);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1403
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1400 jT809_0X1400 = new JT809_0x1400
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.主动上报报警处理结果信息,
+                            SubBodies = new JT809_0x1400_0x1403
+                            {
+                                Result = JT809_0x1403_Result.将来处理,
+                                InfoID = 3388,
+                            }
+                        };
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1400);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1501
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1500 jT809_0X1500 = new JT809_0x1500
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.车辆单向监听应答,
+                            SubBodies = new JT809_0x1500_0x1501
+                            {
+                                Result = JT809_0x1501_Result.监听成功
+                            }
+                        };
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1500);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1502
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1500 jT809_0X1500 = new JT809_0x1500
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.车辆拍照应答,
+                            SubBodies = new JT809_0x1500_0x1502
+                            {
+                                PhotoRspFlag = JT809_0x1502_PhotoRspFlag.完成拍照,
+                                VehiclePosition = new JT809VehiclePositionProperties
+                                {
+                                    Encrypt = JT809_VehiclePositionEncrypt.未加密,
+                                    Day = 19,
+                                    Month = 7,
+                                    Year = 2012,
+                                    Hour = 15,
+                                    Minute = 15,
+                                    Second = 15,
+                                    Lon = 133123456,
+                                    Lat = 24123456,
+                                    Vec1 = 53,
+                                    Vec2 = 45,
+                                    Vec3 = 1234,
+                                    Direction = 45,
+                                    Altitude = 45,
+                                    State = 1,
+                                    Alarm = 1
+                                },
+                                LensID = 123,
+                                SizeType = 1,
+                                Type = 1,
+                            }
+                        };
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1500);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //1503
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x1500 jT809_0X1500 = new JT809_0x1500
+                        {
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            VehicleNo = "桂DJB678",
+                            SubBusinessType = (ushort)JT809SubBusinessType.下发车辆报文应答,
+                            SubBodies = new JT809_0x1500_0x1503
+                            {
+                                MsgID = 9999,
+                                Result = JT809_0x1503_Result.下发成功
+                            }
+                        };
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);

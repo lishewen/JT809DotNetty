@@ -28,9 +28,9 @@ namespace JT809.DotNetty.Core.Clients
     /// </summary>
     public sealed class JT809MainClient : IDisposable
     {
-        private Bootstrap bootstrap;
+        private readonly Bootstrap bootstrap;
 
-        private MultithreadEventLoopGroup group;
+        private readonly MultithreadEventLoopGroup group;
 
         private IChannel channel;
 
@@ -60,17 +60,15 @@ namespace JT809.DotNetty.Core.Clients
                   IChannelPipeline pipeline = channel.Pipeline;
                   //下级平台1分钟发送心跳
                   //上级平台是3分钟没有发送就断开连接
-                  using (var scope = serviceProvider.CreateScope())
-                  {
-                      pipeline.AddLast("jt809MainClientBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
-                           Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
-                           Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
-                      pipeline.AddLast("jt809MainClientSystemIdleState", new IdleStateHandler(180, 60, 200));
-                      pipeline.AddLast("jt809MainClientEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
-                      pipeline.AddLast("jt809MainClientDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
-                      pipeline.AddLast("jt809MainClientConnection", scope.ServiceProvider.GetRequiredService<JT809MainClientConnectionHandler>());
-                      pipeline.AddLast("jt809MainClientServer", scope.ServiceProvider.GetRequiredService<JT809MainClientHandler>());
-                  }
+                  using var scope = serviceProvider.CreateScope();
+                  pipeline.AddLast("jt809MainClientBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
+Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
+Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
+                  pipeline.AddLast("jt809MainClientSystemIdleState", new IdleStateHandler(180, 60, 200));
+                  pipeline.AddLast("jt809MainClientEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
+                  pipeline.AddLast("jt809MainClientDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
+                  pipeline.AddLast("jt809MainClientConnection", scope.ServiceProvider.GetRequiredService<JT809MainClientConnectionHandler>());
+                  pipeline.AddLast("jt809MainClientServer", scope.ServiceProvider.GetRequiredService<JT809MainClientHandler>());
               }));
         }
 
@@ -101,7 +99,7 @@ namespace JT809.DotNetty.Core.Clients
                         //jT809_0X1001.DownLinkPort = downLinkPort;
                         //jT809_0X1001.UserId = userId;
                         //jT809_0X1001.Password = password;
-                        var package = JT809.Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
+                        var package = Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
                         await channel.WriteAndFlushAsync(new JT809Response(package, 100));
                         logger.LogInformation("等待登录应答结果...");
                         manualResetEvent.Pause();

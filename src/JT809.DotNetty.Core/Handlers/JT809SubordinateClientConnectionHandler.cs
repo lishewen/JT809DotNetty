@@ -22,15 +22,17 @@ namespace JT809.DotNetty.Core.Handlers
         private readonly ILogger<JT809SubordinateClientConnectionHandler> logger;
         private readonly JT809SubordinateClient subordinateClient;
         private readonly IJT809SubordinateLinkNotifyService JT809SubordinateLinkNotifyService;
-
+        private readonly JT809Serializer serializer;
         public JT809SubordinateClientConnectionHandler(
             IJT809SubordinateLinkNotifyService jT809SubordinateLinkNotifyService,
             JT809SubordinateClient jT809SubordinateClient,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            JT809Serializer serializer)
         {
             logger = loggerFactory.CreateLogger<JT809SubordinateClientConnectionHandler>();
             JT809SubordinateLinkNotifyService = jT809SubordinateLinkNotifyService;
             subordinateClient = jT809SubordinateClient;
+            this.serializer = serializer;
         }
 
         /// <summary>
@@ -109,7 +111,7 @@ namespace JT809.DotNetty.Core.Handlers
                     var package = JT809BusinessType.从链路连接保持请求消息.Create();
                     JT809Response jT809Response = new JT809Response(package, 100);
                     if (logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"{idleStateEvent.State.ToString()}>>>Heartbeat-{channelId}-{JT809Serializer.Serialize(package, 100).ToHexString()}");
+                        logger.LogInformation($"{idleStateEvent.State}>>>Heartbeat-{channelId}-{serializer.Serialize(package, 100).ToHexString()}");
                     context.WriteAndFlushAsync(jT809Response);
                     //context.WriteAndFlushAsync(Unpooled.WrappedBuffer(JT809Serializer.Serialize(package,100)));
                 }
