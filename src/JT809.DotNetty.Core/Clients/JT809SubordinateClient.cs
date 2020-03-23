@@ -26,15 +26,13 @@ namespace JT809.DotNetty.Core.Clients
     /// </summary>
     public sealed class JT809SubordinateClient : IDisposable
     {
-        private Bootstrap bootstrap;
+        private readonly Bootstrap bootstrap;
 
-        private MultithreadEventLoopGroup group;
+        private readonly MultithreadEventLoopGroup group;
 
         private IChannel channel;
 
         private readonly ILogger<JT809SubordinateClient> logger;
-
-        private readonly ILoggerFactory loggerFactory;
 
         private readonly IServiceProvider serviceProvider;
 
@@ -52,7 +50,6 @@ namespace JT809.DotNetty.Core.Clients
             JT809Serializer serializer)
         {
             this.serviceProvider = provider;
-            this.loggerFactory = loggerFactory;
             this.verifyCodeGenerator = verifyCodeGenerator;
             this.serializer = serializer;
             this.logger = loggerFactory.CreateLogger<JT809SubordinateClient>();
@@ -67,17 +64,15 @@ namespace JT809.DotNetty.Core.Clients
                     IChannelPipeline pipeline = channel.Pipeline;
                     //下级平台1分钟发送心跳
                     //上级平台是3分钟没有发送就断开连接
-                    using (var scope = serviceProvider.CreateScope())
-                    {
-                        pipeline.AddLast("jt809SubClientBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
-                                    Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
-                                    Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
-                        pipeline.AddLast("jt809SubClientSystemIdleState", new IdleStateHandler(180, 60, 200));
-                        pipeline.AddLast("jt809SubClientEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
-                        pipeline.AddLast("jt809SubClientDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
-                        pipeline.AddLast("jt809SubClientConnection", scope.ServiceProvider.GetRequiredService<JT809SubordinateClientConnectionHandler>());
-                        pipeline.AddLast("jt809SubClientServer", scope.ServiceProvider.GetRequiredService<JT809SubordinateClientHandler>());
-                    }
+                    using var scope = serviceProvider.CreateScope();
+                    pipeline.AddLast("jt809SubClientBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
+Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
+Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
+                    pipeline.AddLast("jt809SubClientSystemIdleState", new IdleStateHandler(180, 60, 200));
+                    pipeline.AddLast("jt809SubClientEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
+                    pipeline.AddLast("jt809SubClientDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
+                    pipeline.AddLast("jt809SubClientConnection", scope.ServiceProvider.GetRequiredService<JT809SubordinateClientConnectionHandler>());
+                    pipeline.AddLast("jt809SubClientServer", scope.ServiceProvider.GetRequiredService<JT809SubordinateClientHandler>());
                 }));
         }
 
@@ -98,8 +93,8 @@ namespace JT809.DotNetty.Core.Clients
                         VerifyCode = verifyCode
                     });
                     if (logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"从链路连接请求消息>>>{serializer.Serialize(package, 100).ToHexString()}");
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                        logger.LogInformation($"从链路连接请求消息>>>{serializer.Serialize(package, 256).ToHexString()}");
+                    JT809Response jT809Response = new JT809Response(package, 256);
                     SendAsync(jT809Response);
                 }
                 else
@@ -112,8 +107,8 @@ namespace JT809.DotNetty.Core.Clients
                         VerifyCode = verifyCode
                     });
                     if (logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"从链路连接请求消息>>>{serializer.Serialize(package, 100).ToHexString()}");
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                        logger.LogInformation($"从链路连接请求消息>>>{serializer.Serialize(package, 256).ToHexString()}");
+                    JT809Response jT809Response = new JT809Response(package, 256);
                     SendAsync(jT809Response);
                 }
             }
@@ -143,8 +138,8 @@ namespace JT809.DotNetty.Core.Clients
                     VerifyCode = verifyCode
                 });
                 if (logger.IsEnabled(LogLevel.Information))
-                    logger.LogInformation($"从链路连接请求消息>>>{serializer.Serialize(package, 100).ToHexString()}");
-                JT809Response jT809Response = new JT809Response(package, 100);
+                    logger.LogInformation($"从链路连接请求消息>>>{serializer.Serialize(package, 256).ToHexString()}");
+                JT809Response jT809Response = new JT809Response(package, 256);
                 SendAsync(jT809Response);
                 return channel.Open;
             }
@@ -194,9 +189,9 @@ namespace JT809.DotNetty.Core.Clients
                     {
                         VerifyCode = verifyCodeGenerator.Get()
                     });
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                    JT809Response jT809Response = new JT809Response(package, 256);
                     if (logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"发送从链路注销请求>>>{serializer.Serialize(package, 100).ToHexString()}");
+                        logger.LogInformation($"发送从链路注销请求>>>{serializer.Serialize(package, 256).ToHexString()}");
                     SendAsync(jT809Response);
                 }
                 catch (Exception ex)

@@ -56,7 +56,7 @@ namespace JT809.DotNetty.Core.Handlers
             Policy.HandleResult(context.Channel.Open)
                      .WaitAndRetryForeverAsync(retryAttempt =>
                      {
-                         if(retryAttempt < 3)
+                         if (retryAttempt < 3)
                          {
 
                              return TimeSpan.FromSeconds(10);
@@ -101,17 +101,16 @@ namespace JT809.DotNetty.Core.Handlers
         /// <param name="evt"></param>
         public override void UserEventTriggered(IChannelHandlerContext context, object evt)
         {
-            IdleStateEvent idleStateEvent = evt as IdleStateEvent;
-            if (idleStateEvent != null)
+            if (evt is IdleStateEvent idleStateEvent)
             {
                 if (idleStateEvent.State == IdleState.WriterIdle)
                 {
                     string channelId = context.Channel.Id.AsShortText();
                     //发送从链路保持请求数据包
                     var package = JT809BusinessType.从链路连接保持请求消息.Create();
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                    JT809Response jT809Response = new JT809Response(package, 256);
                     if (logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"{idleStateEvent.State}>>>Heartbeat-{channelId}-{serializer.Serialize(package, 100).ToHexString()}");
+                        logger.LogInformation($"{idleStateEvent.State}>>>Heartbeat-{channelId}-{serializer.Serialize(package, 256).ToHexString()}");
                     context.WriteAndFlushAsync(jT809Response);
                     //context.WriteAndFlushAsync(Unpooled.WrappedBuffer(JT809Serializer.Serialize(package,100)));
                 }

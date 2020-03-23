@@ -74,7 +74,7 @@ namespace JT809.DotNetty.Core.Handlers
             });
             var jT809_0x1001 = request.Package.Bodies as JT809_0x1001;
             SubordinateLoginService.Login(jT809_0x1001.DownLinkIP, jT809_0x1001.DownLinkPort);
-            return new JT809Response(package, 100);
+            return new JT809Response(package, 256);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace JT809.DotNetty.Core.Handlers
             var jT809_0x1003 = request.Package.Bodies as JT809_0x1003;
             Logger.LogInformation(JsonConvert.SerializeObject(jT809_0x1003));
             var package = JT809BusinessType.主链路注销应答消息.Create();
-            return new JT809Response(package, 100);
+            return new JT809Response(package, 256);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace JT809.DotNetty.Core.Handlers
         public virtual JT809Response Msg0x1005(JT809Request request)
         {
             var package = JT809BusinessType.主链路连接保持应答消息.Create();
-            return new JT809Response(package, 100);
+            return new JT809Response(package, 256);
         }
 
         /// <summary>

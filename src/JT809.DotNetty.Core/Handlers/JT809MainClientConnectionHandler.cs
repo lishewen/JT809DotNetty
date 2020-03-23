@@ -69,16 +69,15 @@ namespace JT809.DotNetty.Core.Handlers
         /// <param name="evt"></param>
         public override void UserEventTriggered(IChannelHandlerContext context, object evt)
         {
-            IdleStateEvent idleStateEvent = evt as IdleStateEvent;
-            if (idleStateEvent != null)
+            if (evt is IdleStateEvent idleStateEvent)
             {
                 if (idleStateEvent.State == IdleState.WriterIdle)
                 {
                     string channelId = context.Channel.Id.AsShortText();
-                    logger.LogInformation($"{idleStateEvent.State.ToString()}>>>Heartbeat-{channelId}");
+                    logger.LogInformation($"{idleStateEvent.State}>>>Heartbeat-{channelId}");
                     //发送主链路保持请求数据包
                     var package = JT809BusinessType.主链路连接保持请求消息.Create();
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                    JT809Response jT809Response = new JT809Response(package, 256);
                     context.WriteAndFlushAsync(jT809Response);
                 }
             }

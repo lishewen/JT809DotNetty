@@ -19,7 +19,7 @@ namespace JT809.DotNetty.Core.Handlers
     /// </summary>
     public abstract class JT809InferiorMsgIdReceiveHandlerBase
     {
-        protected JT809Configuration  Configuration { get; }
+        protected JT809Configuration Configuration { get; }
         protected ILogger Logger { get; }
         protected IJT809ManualResetEvent ManualResetEvent { get; }
 
@@ -38,7 +38,7 @@ namespace JT809.DotNetty.Core.Handlers
                 {JT809BusinessType.主链路连接保持应答消息,Msg0x1006},
                 {JT809BusinessType.从链路连接请求消息,Msg0x9001},
                 {JT809BusinessType.从链路注销请求消息, Msg0x9003},
-                {JT809BusinessType.从链路连接保持请求消息,Msg0x9005 }, 
+                {JT809BusinessType.从链路连接保持请求消息,Msg0x9005 }
             };
             SubHandlerDict = new Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>>
             {
@@ -63,7 +63,7 @@ namespace JT809.DotNetty.Core.Handlers
                 Logger.LogInformation(JsonConvert.SerializeObject(request));
             }
             var jT809_0x1002 = request.Package.Bodies as JT809_0x1002;
-            if(jT809_0x1002.Result== JT809_0x1002_Result.成功)
+            if (jT809_0x1002.Result == JT809_0x1002_Result.成功)
             {
                 ManualResetEvent.Resume();
             }
@@ -89,14 +89,15 @@ namespace JT809.DotNetty.Core.Handlers
         /// <returns>从链路连接应答消息</returns>
         public virtual JT809Response Msg0x9001(JT809Request request)
         {
-            var package = JT809BusinessType.从链路连接应答消息.Create(new JT809_0x9002 {
+            var package = JT809BusinessType.从链路连接应答消息.Create(new JT809_0x9002
+            {
                 Result = JT809_0x9002_Result.成功
             });
             if (Logger.IsEnabled(LogLevel.Information))
             {
                 Logger.LogInformation(JsonConvert.SerializeObject(request));
             }
-            return new JT809Response(package, 100);
+            return new JT809Response(package, 256);
         }
 
         /// <summary>
@@ -111,7 +112,7 @@ namespace JT809.DotNetty.Core.Handlers
             {
                 Logger.LogInformation(JsonConvert.SerializeObject(request));
             }
-            return new JT809Response(package, 100);
+            return new JT809Response(package, 256);
         }
 
         /// <summary>
@@ -126,7 +127,7 @@ namespace JT809.DotNetty.Core.Handlers
             {
                 Logger.LogInformation(JsonConvert.SerializeObject(request));
             }
-            return new JT809Response(package, 100);
+            return new JT809Response(package, 256);
         }
     }
 }

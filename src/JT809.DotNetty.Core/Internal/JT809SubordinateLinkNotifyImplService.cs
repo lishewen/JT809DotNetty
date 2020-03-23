@@ -52,9 +52,9 @@ namespace JT809.DotNetty.Core.Internal
                     {
                         ReasonCode = reasonCode
                     });
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                    JT809Response jT809Response = new JT809Response(package, 256);
                     if (logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"从链路断开通知消息>>>{serializer.Serialize(package, 100).ToHexString()}");
+                        logger.LogInformation($"从链路断开通知消息>>>{serializer.Serialize(package, 256).ToHexString()}");
                     session.Channel.WriteAndFlushAsync(jT809Response);
                 }
             }
