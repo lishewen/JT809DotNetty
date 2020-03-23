@@ -75,7 +75,7 @@ Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
         private JT809_0x1001 _jT809_0x1001;
         private IPEndPoint iPEndPoint;
         public async Task<bool> Login(
-            string ip, 
+            string ip,
             int port,
             JT809_0x1001 jT809_0x1001)
         {
@@ -100,7 +100,8 @@ Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
                         //jT809_0X1001.UserId = userId;
                         //jT809_0X1001.Password = password;
                         var package = Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
-                        await channel.WriteAndFlushAsync(new JT809Response(package, 100));
+                        await channel.WriteAndFlushAsync(new JT809Response(package, 256));
+                        //await channel.WriteAsync(new JT809Response(package, 100));
                         logger.LogInformation("等待登录应答结果...");
                         manualResetEvent.Pause();
                     }
@@ -116,7 +117,7 @@ Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
             }
             return await Task.FromResult(successed);
         }
-        
+
         public async void SendAsync(JT809Response jT809Response)
         {
             if (disposed) return;
@@ -141,7 +142,7 @@ Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
                         .ExecuteAsync(async () =>
                         {
                             channel = await bootstrap.ConnectAsync(iPEndPoint);
-                            var package = JT809.Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
+                            var package = Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
                             await channel.WriteAndFlushAsync(new JT809Response(package, 100));
                             logger.LogInformation("尝试重连,等待登录应答结果...");
                             manualResetEvent.Pause();
