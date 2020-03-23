@@ -260,6 +260,23 @@ namespace JT809.Inferior.Client
                         Thread.Sleep(4000);
                     }
                 });
+                //9101
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x9101 jT809_0X9101 = new JT809_0x9101
+                        {
+                            StartTime = 1584669924,
+                            EndTime = 1584756324,
+                            DynamicInfoTotal = uint.MaxValue
+                        };
+                        var package = JT809BusinessType.接收定位信息数量通知消息.Create(jT809_0X9101);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
             }
             return Task.CompletedTask;
         }
