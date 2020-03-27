@@ -33,7 +33,7 @@ namespace JT809.Inferior.Client
             {
                 DownLinkIP = "124.227.230.35",
                 DownLinkPort = 1809,
-                MsgGNSSCENTERID = 100210,
+                MsgGNSSCENTERID = 10004,
                 UserId = 10004,
                 Password = "12345"
             }).Result;

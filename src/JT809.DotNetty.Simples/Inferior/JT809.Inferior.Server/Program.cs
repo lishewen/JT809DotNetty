@@ -43,13 +43,14 @@ namespace JT809.Inferior.Server
                     services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
                     services.AddJT809Configure(new DefaultConfig
                     {
-                         HeaderOptions=new Protocol.Configs.JT809HeaderOptions
-                         {
-                              MsgGNSSCENTERID=100210
-                         }
+                        HeaderOptions = new Protocol.Configs.JT809HeaderOptions
+                        {
+                            MsgGNSSCENTERID = 10004
+                        }
                     });
                     services.AddJT809Core(hostContext.Configuration)
-                            .AddJT809InferiorPlatform(options: options => {
+                            .AddJT809InferiorPlatform(options: options =>
+                            {
                                 options.TcpPort = 809;
                             });
                 });

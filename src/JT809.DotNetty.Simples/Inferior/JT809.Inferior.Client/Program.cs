@@ -15,6 +15,7 @@ namespace JT809.Inferior.Client
     public class DefaultConfig : JT809GlobalConfigBase
     {
         public override string ConfigId => "test";
+        public override bool SkipCRCCode => true;
     }
     class Program
     {
@@ -39,7 +40,8 @@ namespace JT809.Inferior.Client
                     {
                         HeaderOptions = new Protocol.Configs.JT809HeaderOptions
                         {
-                            MsgGNSSCENTERID = 100210,
+                            MsgGNSSCENTERID = 10004,
+                            EncryptFlag = JT809Header_Encrypt.None
                         }
                     });
                     services.AddSingleton<JT809Serializer>();
