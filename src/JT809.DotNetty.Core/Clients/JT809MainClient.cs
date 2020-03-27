@@ -41,15 +41,18 @@ namespace JT809.DotNetty.Core.Clients
         private bool disposed = false;
 
         private readonly IJT809ManualResetEvent manualResetEvent;
+        private readonly IJT809Config config;
 
         public JT809MainClient(
             IJT809ManualResetEvent jT809ManualResetEvent,
             IServiceProvider provider,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IJT809Config config)
         {
             this.serviceProvider = provider;
             this.logger = loggerFactory.CreateLogger<JT809MainClient>();
             this.manualResetEvent = jT809ManualResetEvent;
+            this.config = config;
             group = new MultithreadEventLoopGroup();
             bootstrap = new Bootstrap();
             bootstrap.Group(group)
@@ -99,7 +102,10 @@ Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
                         //jT809_0X1001.DownLinkPort = downLinkPort;
                         //jT809_0X1001.UserId = userId;
                         //jT809_0X1001.Password = password;
-                        var package = Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
+                        var package = Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(new JT809Header
+                        {
+                            MsgGNSSCENTERID = config.HeaderOptions.MsgGNSSCENTERID
+                        }, _jT809_0x1001);
                         await channel.WriteAndFlushAsync(new JT809Response(package, 256));
                         //await channel.WriteAsync(new JT809Response(package, 100));
                         logger.LogInformation("等待登录应答结果...");

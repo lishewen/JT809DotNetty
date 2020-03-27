@@ -12,6 +12,7 @@ using JT809.Protocol.SubMessageBody;
 using JT809.Protocol.Metadata;
 using JT809.Protocol.MessageBody;
 using JT809.Protocol.Enums;
+using JT809.Protocol;
 
 namespace JT809.Inferior.Client
 {
@@ -19,12 +20,20 @@ namespace JT809.Inferior.Client
     {
         private readonly JT809MainClient mainClient;
         private readonly ILogger<JT809InferiorService> logger;
+        private readonly IJT809Config config;
+        private readonly JT809Header header;
         public JT809InferiorService(
             ILoggerFactory loggerFactory,
-            JT809MainClient mainClient)
+            JT809MainClient mainClient,
+            IJT809Config config)
         {
             this.mainClient = mainClient;
             logger = loggerFactory.CreateLogger<JT809InferiorService>();
+            this.config = config;
+            header = new JT809Header
+            {
+                MsgGNSSCENTERID = config.HeaderOptions.MsgGNSSCENTERID
+            };
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
@@ -57,7 +66,7 @@ namespace JT809.Inferior.Client
                                 ObjectType = JT809_0x1301_ObjectType.当前连接的下级平台
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1300);
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1300);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -78,7 +87,7 @@ namespace JT809.Inferior.Client
                                 InfoID = 1234
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1300);
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1300);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -100,7 +109,7 @@ namespace JT809.Inferior.Client
                                 Result = JT809_0x1401_Result.处理中
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1400);
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1400);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -125,7 +134,7 @@ namespace JT809.Inferior.Client
                                 InfoID = 3388,
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1400);
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1400);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -147,7 +156,7 @@ namespace JT809.Inferior.Client
                                 InfoID = 3388,
                             }
                         };
-                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(jT809_0X1400);
+                        var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1400);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -168,7 +177,7 @@ namespace JT809.Inferior.Client
                                 Result = JT809_0x1501_Result.监听成功
                             }
                         };
-                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -211,7 +220,7 @@ namespace JT809.Inferior.Client
                                 Type = 1,
                             }
                         };
-                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -233,7 +242,7 @@ namespace JT809.Inferior.Client
                                 Result = JT809_0x1503_Result.下发成功
                             }
                         };
-                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -254,7 +263,7 @@ namespace JT809.Inferior.Client
                                 Result = JT809_0x1505_Result.无该车辆
                             }
                         };
-                        var package = JT809BusinessType.主链路车辆监管消息.Create(jT809_0X1500);
+                        var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
@@ -271,7 +280,7 @@ namespace JT809.Inferior.Client
                             EndTime = 1584756324,
                             DynamicInfoTotal = uint.MaxValue
                         };
-                        var package = JT809BusinessType.接收定位信息数量通知消息.Create(jT809_0X9101);
+                        var package = JT809BusinessType.接收定位信息数量通知消息.Create(header, jT809_0X9101);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
