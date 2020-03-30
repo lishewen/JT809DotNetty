@@ -293,36 +293,38 @@ namespace JT809.Inferior.Client
                         Thread.Sleep(4000);
                     }
                 });
+                #region 从链路
                 //9401
-                Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        JT809_0x9400 jT809_0X9400 = new JT809_0x9400
-                        {
-                            VehicleNo = "桂DJB678",
-                            VehicleColor = JT809VehicleColorType.蓝色,
-                            SubBusinessType = JT809SubBusinessType.报警督办请求.ToUInt16Value(),
-                            SubBodies = JT809SubBusinessType.报警督办请求.Create_报警督办请求(
-                                new JT809_0x9400_0x9401
-                                {
-                                    WarnSrc = JT809WarnSrc.车载终端,
-                                    WarnType = JT809WarnType.疲劳驾驶报警.ToUInt16Value(),
-                                    WarnTime = DateTime.Now,
-                                    SupervisionID = "123FFAA1",
-                                    SupervisionEndTime = DateTime.Now,
-                                    SupervisionLevel = 3,
-                                    Supervisor = "算神",
-                                    SupervisorTel = "13907740944",
-                                    SupervisorEmail = "273279200@qq.com"
-                                })
-                        };
-                        var package = JT809BusinessType.从链路报警信息交互消息.Create(header, jT809_0X9400);
-                        mainClient.SendAsync(new JT809Response(package, 256));
-                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
-                        Thread.Sleep(4000);
-                    }
-                });
+                //Task.Run(() =>
+                //{
+                //    while (true)
+                //    {
+                //        JT809_0x9400 jT809_0X9400 = new JT809_0x9400
+                //        {
+                //            VehicleNo = "桂DJB678",
+                //            VehicleColor = JT809VehicleColorType.蓝色,
+                //            SubBusinessType = JT809SubBusinessType.报警督办请求.ToUInt16Value(),
+                //            SubBodies = JT809SubBusinessType.报警督办请求.Create_报警督办请求(
+                //                new JT809_0x9400_0x9401
+                //                {
+                //                    WarnSrc = JT809WarnSrc.车载终端,
+                //                    WarnType = JT809WarnType.疲劳驾驶报警.ToUInt16Value(),
+                //                    WarnTime = DateTime.Now,
+                //                    SupervisionID = "123FFAA1",
+                //                    SupervisionEndTime = DateTime.Now,
+                //                    SupervisionLevel = 3,
+                //                    Supervisor = "算神",
+                //                    SupervisorTel = "13907740944",
+                //                    SupervisorEmail = "273279200@qq.com"
+                //                })
+                //        };
+                //        var package = JT809BusinessType.从链路报警信息交互消息.Create(header, jT809_0X9400);
+                //        mainClient.SendAsync(new JT809Response(package, 256));
+                //        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                //        Thread.Sleep(4000);
+                //    }
+                //});
+                #endregion
             }
             return Task.CompletedTask;
         }
