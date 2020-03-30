@@ -20,7 +20,6 @@ namespace JT809.Inferior.Client
     {
         private readonly JT809MainClient mainClient;
         private readonly ILogger<JT809InferiorService> logger;
-        private readonly IJT809Config config;
         private readonly JT809Header header;
         public JT809InferiorService(
             ILoggerFactory loggerFactory,
@@ -29,7 +28,6 @@ namespace JT809.Inferior.Client
         {
             this.mainClient = mainClient;
             logger = loggerFactory.CreateLogger<JT809InferiorService>();
-            this.config = config;
             header = new JT809Header
             {
                 MsgGNSSCENTERID = config.HeaderOptions.MsgGNSSCENTERID
@@ -57,14 +55,15 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.平台查岗应答,
-                            SubBodies = new JT809_0x1300_0x1301
-                            {
-                                ObjectID = "10004",
-                                InfoContent = "10004",
-                                InfoID = 10004,
-                                ObjectType = JT809_0x1301_ObjectType.当前连接的下级平台
-                            }
+                            SubBusinessType = JT809SubBusinessType.平台查岗应答.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.平台查岗应答.Create_平台查岗应答(
+                                new JT809_0x1300_0x1301
+                                {
+                                    ObjectID = "10004",
+                                    InfoContent = "10004",
+                                    InfoID = 10004,
+                                    ObjectType = JT809_0x1301_ObjectType.当前连接的下级平台
+                                })
                         };
                         var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1300);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -81,11 +80,12 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.下发平台间报文应答,
-                            SubBodies = new JT809_0x1300_0x1302
-                            {
-                                InfoID = 1234
-                            }
+                            SubBusinessType = JT809SubBusinessType.下发平台间报文应答.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.下发平台间报文应答.Create_下发平台间报文应答(
+                                new JT809_0x1300_0x1302
+                                {
+                                    InfoID = 1234
+                                })
                         };
                         var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1300);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -102,12 +102,13 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.报警督办应答,
-                            SubBodies = new JT809_0x1400_0x1401
-                            {
-                                SupervisionID = 10004,
-                                Result = JT809_0x1401_Result.处理中
-                            }
+                            SubBusinessType = JT809SubBusinessType.报警督办应答.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.报警督办应答.Create_报警督办应答(
+                                new JT809_0x1400_0x1401
+                                {
+                                    SupervisionID = 10004,
+                                    Result = JT809_0x1401_Result.处理中
+                                })
                         };
                         var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1400);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -124,15 +125,16 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.上报报警信息,
-                            SubBodies = new JT809_0x1400_0x1402
-                            {
-                                WarnSrc = JT809WarnSrc.车载终端,
-                                WarnType = JT809WarnType.偏离路线报警,
-                                WarnTime = DateTime.Now,
-                                InfoContent = "Test",
-                                InfoID = 3388,
-                            }
+                            SubBusinessType = JT809SubBusinessType.上报报警信息.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.上报报警信息.Create_上报报警信息(
+                                new JT809_0x1400_0x1402
+                                {
+                                    WarnSrc = JT809WarnSrc.车载终端,
+                                    WarnType = JT809WarnType.偏离路线报警,
+                                    WarnTime = DateTime.Now,
+                                    InfoContent = "Test",
+                                    InfoID = 3388,
+                                })
                         };
                         var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1400);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -149,12 +151,13 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.主动上报报警处理结果信息,
-                            SubBodies = new JT809_0x1400_0x1403
-                            {
-                                Result = JT809_0x1403_Result.将来处理,
-                                InfoID = 3388,
-                            }
+                            SubBusinessType = JT809SubBusinessType.主动上报报警处理结果信息.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.主动上报报警处理结果信息.Create_主动上报报警处理结果信息(
+                                new JT809_0x1400_0x1403
+                                {
+                                    Result = JT809_0x1403_Result.将来处理,
+                                    InfoID = 3388,
+                                })
                         };
                         var package = JT809BusinessType.主链路平台间信息交互消息.Create(header, jT809_0X1400);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -171,11 +174,12 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.车辆单向监听应答,
-                            SubBodies = new JT809_0x1500_0x1501
-                            {
-                                Result = JT809_0x1501_Result.监听成功
-                            }
+                            SubBusinessType = JT809SubBusinessType.车辆单向监听应答.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.车辆单向监听应答.Create_车辆单向监听应答(
+                                new JT809_0x1500_0x1501
+                                {
+                                    Result = JT809_0x1501_Result.监听成功
+                                })
                         };
                         var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -192,33 +196,34 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.车辆拍照应答,
-                            SubBodies = new JT809_0x1500_0x1502
-                            {
-                                PhotoRspFlag = JT809_0x1502_PhotoRspFlag.完成拍照,
-                                VehiclePosition = new JT809VehiclePositionProperties
+                            SubBusinessType = JT809SubBusinessType.车辆拍照应答.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.车辆拍照应答.Create_车辆拍照应答(
+                                new JT809_0x1500_0x1502
                                 {
-                                    Encrypt = JT809_VehiclePositionEncrypt.未加密,
-                                    Day = 19,
-                                    Month = 7,
-                                    Year = 2012,
-                                    Hour = 15,
-                                    Minute = 15,
-                                    Second = 15,
-                                    Lon = 133123456,
-                                    Lat = 24123456,
-                                    Vec1 = 53,
-                                    Vec2 = 45,
-                                    Vec3 = 1234,
-                                    Direction = 45,
-                                    Altitude = 45,
-                                    State = 1,
-                                    Alarm = 1
-                                },
-                                LensID = 123,
-                                SizeType = 1,
-                                Type = 1,
-                            }
+                                    PhotoRspFlag = JT809_0x1502_PhotoRspFlag.完成拍照,
+                                    VehiclePosition = new JT809VehiclePositionProperties
+                                    {
+                                        Encrypt = JT809_VehiclePositionEncrypt.未加密,
+                                        Day = 19,
+                                        Month = 7,
+                                        Year = 2012,
+                                        Hour = 15,
+                                        Minute = 15,
+                                        Second = 15,
+                                        Lon = 133123456,
+                                        Lat = 24123456,
+                                        Vec1 = 53,
+                                        Vec2 = 45,
+                                        Vec3 = 1234,
+                                        Direction = 45,
+                                        Altitude = 45,
+                                        State = 1,
+                                        Alarm = 1
+                                    },
+                                    LensID = 123,
+                                    SizeType = 1,
+                                    Type = 1,
+                                })
                         };
                         var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -235,12 +240,13 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.下发车辆报文应答,
-                            SubBodies = new JT809_0x1500_0x1503
-                            {
-                                MsgID = 9999,
-                                Result = JT809_0x1503_Result.下发成功
-                            }
+                            SubBusinessType = JT809SubBusinessType.下发车辆报文应答.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.下发车辆报文应答.Create_下发车辆报文应答(
+                                new JT809_0x1500_0x1503
+                                {
+                                    MsgID = 9999,
+                                    Result = JT809_0x1503_Result.下发成功
+                                })
                         };
                         var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -257,11 +263,12 @@ namespace JT809.Inferior.Client
                         {
                             VehicleColor = JT809VehicleColorType.蓝色,
                             VehicleNo = "桂DJB678",
-                            SubBusinessType = (ushort)JT809SubBusinessType.车辆应急接入监管平台应答消息,
-                            SubBodies = new JT809_0x1500_0x1505
-                            {
-                                Result = JT809_0x1505_Result.无该车辆
-                            }
+                            SubBusinessType = JT809SubBusinessType.车辆应急接入监管平台应答消息.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.车辆应急接入监管平台应答消息.Create_车辆应急接入监管平台应答消息(
+                                new JT809_0x1500_0x1505
+                                {
+                                    Result = JT809_0x1505_Result.无该车辆
+                                })
                         };
                         var package = JT809BusinessType.主链路车辆监管消息.Create(header, jT809_0X1500);
                         mainClient.SendAsync(new JT809Response(package, 256));
@@ -281,6 +288,36 @@ namespace JT809.Inferior.Client
                             DynamicInfoTotal = uint.MaxValue
                         };
                         var package = JT809BusinessType.接收定位信息数量通知消息.Create(header, jT809_0X9101);
+                        mainClient.SendAsync(new JT809Response(package, 256));
+                        logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
+                        Thread.Sleep(4000);
+                    }
+                });
+                //9401
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        JT809_0x9400 jT809_0X9400 = new JT809_0x9400
+                        {
+                            VehicleNo = "桂DJB678",
+                            VehicleColor = JT809VehicleColorType.蓝色,
+                            SubBusinessType = JT809SubBusinessType.报警督办请求.ToUInt16Value(),
+                            SubBodies = JT809SubBusinessType.报警督办请求.Create_报警督办请求(
+                                new JT809_0x9400_0x9401
+                                {
+                                    WarnSrc = JT809WarnSrc.车载终端,
+                                    WarnType = JT809WarnType.疲劳驾驶报警.ToUInt16Value(),
+                                    WarnTime = DateTime.Now,
+                                    SupervisionID = "123FFAA1",
+                                    SupervisionEndTime = DateTime.Now,
+                                    SupervisionLevel = 3,
+                                    Supervisor = "算神",
+                                    SupervisorTel = "13907740944",
+                                    SupervisorEmail = "273279200@qq.com"
+                                })
+                        };
+                        var package = JT809BusinessType.从链路报警信息交互消息.Create(header, jT809_0X9400);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
